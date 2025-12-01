@@ -8,8 +8,18 @@ using test.Repositories;
 using test.Repositories.Interfaces;
 using test.Services;
 using test.Services.Interfaces;
+using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
+
+if (builder.Environment.IsDevelopment()) {
+    Env.Load();
+
+    var connectionString = builder.Configuration.GetConnectionString("Default");
+    var password = Env.GetString("DEVELOPMENT_DATABASE_PASSWORD");
+
+    builder.Configuration.GetSection("ConnectionStrings")["Default"] = connectionString + password;
+}
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
