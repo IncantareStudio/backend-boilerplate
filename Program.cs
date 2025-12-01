@@ -1,7 +1,13 @@
+using System.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
+using Npgsql;
 using test.Infrastructure.JWT;
 using test.Infrastructure.Swagger;
+using test.Repositories;
+using test.Repositories.Interfaces;
+using test.Services;
+using test.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,7 +43,13 @@ builder.Services.AddSwaggerGen(c => {
 	c.EnableAnnotations();
 });
 
+builder.Services.AddScoped<IDbConnection>(sp =>
+	new NpgsqlConnection(builder.Configuration.GetConnectionString("Default"))
+);
+
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IUsersService, UsersService>();
+builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 
 var app = builder.Build();
 
